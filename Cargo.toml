@@ -1,0 +1,9 @@
+[package]
+
+name = "w"
+version = "0.0.1"
+authors = ["Noah Weninger"]
+
+[[bin]]
+name = "w"
+path = "src/main.rs"

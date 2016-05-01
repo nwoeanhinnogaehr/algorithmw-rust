@@ -1,0 +1,59 @@
+CMPUT 403 Final Project
+Noah Weninger
+Winter 2016
+
+This is an implementation of Hindley-Milner type inference via Algorithm W. Given the abstract
+syntax tree of some program in a format that resembles lambda calculus but extended to support
+various primitive types and binding of values to names, it will determine the most general type of
+the program. Type variables will only be instantiated whenever necessary.
+
+The complexity class is EXPTIME. Due to the complex nature of the input, it is difficult to
+determine more specifically how the algorithm will behave on an input. Two of the test cases
+demonstrate this - by changing the order of a single application it goes from producing a small type
+as output to an incredibly large one.
+
+This project is implemented in Rust. Under the directory src, you will see two files. w.rs
+contains the implementation, and main.rs contains the tests. To compile, you will need the Rust
+compiler, version 1.x, as well as Cargo. Cargo is usually included alongside a default Rust
+installation. Compiler downloads are available here: https://www.rust-lang.org/downloads.html
+
+Once your build environment is set up, just do `cargo run` from inside this directory to compile
+and run the tests.
+
+I tried to include a variety of tests, from basic to advanced, some of which cannot be typed and
+fail. Reading the raw abstract syntax tree in main.rs where the tests are defined may be annoying,
+so tests are pretty-printed to the console as they are run. The syntax is some sort of weird mixture
+of lambda calculus and OCaml:
+
+`let x = y in z` defines the variable x as y in the expression z.
+`λx.λy.(x y)` defines a function that takes some x and returns a function that takes some y and
+returns the application of y to x. You can think of this as being a two argument function that
+applies one of it's arguments to the other.
+
+`('t1 → 't1)` is the type of a function that takes a variable of any type 't1 and returns a variable
+of the same type. A well known example would be the identity function.
+`(Int → (Int → Int))` is the type of a function that takes an integer and returns a function that
+takes another integer and returns an integer. This could be an binary integer addition function, for
+example.
+
+I also tried to add support for recursive types but couldn't get it working in time. Ideally
+recursive types would be fully supported (similarly to the -rectypes flag in OCaml). It would
+need to be possible to type something as `'t1 = 't2 → 't1`, which is currently not supported.
+
+Another interesting extension would be to allow multiple variables of the same name, with the first
+one to be successfully unified chosen for application. This would allow, for example, a function that
+appears to take a variable number of arguments, by defining it twice, once as the identity function,
+and once as a function that returns some operation on an argument and a recursive call to the
+function itself. Then the definition as identity will be invoked when the output of the function
+needs to be used as a value and the other definition will be used when the output needs to be used
+as a function (so that more arguments can be applied).
+
+Resources:
+https://github.com/yairchu/Algorithm-W-Step-By-Step/blob/master/AlgorithmW.pdf
+https://en.wikipedia.org/wiki/Hindley%E2%80%93Milner_type_system
+http://web.cs.wpi.edu/~cs4536/c12/milner-damas_principal_types.pdf
+http://dysphoria.net/2009/06/28/hindley-milner-type-inference-in-scala/
+http://smallshire.org.uk/sufficientlysmall/2010/04/11/a-hindley-milner-type-inference-implementation-in-python/
+https://www7.in.tum.de/um/courses/seminar/sove/SS2013/final/hindley-milner.slides.pdf
+http://dev.stephendiehl.com/fun/006_hindley_milner.html
+http://akgupta.ca/blog/2013/05/14/so-you-still-dont-understand-hindley-milner/
